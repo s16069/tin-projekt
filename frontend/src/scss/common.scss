@@ -1,0 +1,58 @@
+label.required:before {
+  color: #e32;
+  content: "* ";
+  display: inline;
+}
+
+.thin-page {
+  margin: 10px auto;
+  width: 600px;
+
+  header {
+    margin: 10px 10px 20px 10px;
+    text-align: center;
+  }
+}
+
+form {
+  margin: 10px;
+
+  h4 {
+    text-align: center;
+  }
+
+  .row {
+    display: grid;
+    grid-template-rows: repeat(2, 50%);
+    grid-template-columns: 20% 1fr;
+    margin: 10px auto;
+
+    label {
+      margin: 3px 5px;
+      font-size: 1.2em;
+    }
+
+    .error {
+      grid-column: 1 / span 2;
+      margin: 5px auto;
+      text-align: center;
+      color: #b00;
+    }
+  }
+  
+  ul.errors {
+    margin: 5px auto;
+    text-align: center;
+    color: #b00;
+    list-style-type: none;
+  }
+
+  button {
+    text-align: center;
+    width: 100%;
+  }
+  
+  input.invalid {
+    box-shadow: 0 0 2pt 1pt #b00;
+  }
+}
