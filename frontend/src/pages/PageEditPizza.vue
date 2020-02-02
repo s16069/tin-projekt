@@ -11,7 +11,7 @@
 		<div class="center-text">
 			<img src="../assets/pizza.png" width="100px" height="100px" alt="pizza image">
 			<br>
-			<button>Zmień zdjęcie</button>
+			<button @click="onChangePicClicked">Zmień zdjęcie</button>
 		</div>
 		
 		<section id="pizza-info">
@@ -74,8 +74,8 @@
 		</section>
 		<section id="prices-header">
 			<h4>Ceny wariantów:</h4>
-			<button @click="onAddPriceClicked()">Dodaj wariant</button>
-			<button @click="onAddSuggestedPricesClicked()">Dodaj sugerowane warianty</button>
+			<button @click="onAddPriceClicked">Dodaj wariant</button>
+			<button @click="onAddSuggestedPricesClicked">Dodaj sugerowane warianty</button>
 		</section>
 		<section id="prices">
 			<span>Ciasto</span>
@@ -180,10 +180,15 @@ export default {
 				console.error(error);
 			}
 		},
-		onAddPriceClicked() {
+		onChangePicClicked(ev) {
+			ev.preventDefault();
+		},
+		onAddPriceClicked(ev) {
+			ev.preventDefault()
 			this.pizza.pizzaPrices.push({});
 		},
-		onAddSuggestedPricesClicked() {
+		onAddSuggestedPricesClicked(ev) {
+			ev.preventDefault()
 			this.pizza.pizzaPrices.splice(0, this.pizza.pizzaPrices.length);
 
 			for (const size of this.sizes) {

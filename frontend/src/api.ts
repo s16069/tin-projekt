@@ -136,4 +136,25 @@ export default class Api {
 
 		return response.data
 	}
+
+	static async getOrders(): Promise<Order[]> {
+		const response = await api.get(`/orders`)
+
+		return response.data
+	}
+
+	static async getOrder(orderId: number): Promise<Order> {
+		const response = await api.get(`/orders/${orderId}`)
+
+		return response.data
+	}
+
+	static async setOrderStatus(orderId: number, status: string): Promise<Order> {
+		var formData = new FormData()
+		formData.append('status', status);
+
+		const response = await api.put(`/orders/${orderId}/status`, formData)
+
+		return response.data
+	}
 }

@@ -9,13 +9,14 @@
       <router-link to="/login" tag="button" v-if="!isLoggedIn">Zaloguj</router-link>
       <router-link to="/register" tag="button" v-if="!isLoggedIn">Załóż konto</router-link>
       
-      <router-link to="/order" tag="button" v-if="isLoggedIn">Zamówienie</router-link>
+      <router-link to="/cart" tag="button" v-if="isLoggedIn">Koszyk</router-link>
       <div v-if="isLoggedIn" class="dropdown">
         <button class="dropbtn">{{ getLogin }}</button>
         <div class="dropdown-content">
           <router-link to="/account">Konto</router-link>
           <router-link to="/admin/menu" v-if="isAdmin">Edytuj Menu</router-link>
-          <a href="#" @click="logout()">Wyloguj</a>
+          <router-link to="/orders">Zamówienia</router-link>
+          <a href="#" @click="onLogoutClicked()">Wyloguj</a>
         </div>
       </div> 
     </nav>
@@ -31,6 +32,11 @@ export default Vue.extend({
   },
   methods: {
     ...mapActions('user', ['logout']),
+    onLogoutClicked() {
+      this.$store.dispatch('user/logout');
+
+      this.$router.push('/');
+    }
   }
 });
 </script>

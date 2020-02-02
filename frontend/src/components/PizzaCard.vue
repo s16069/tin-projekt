@@ -29,7 +29,7 @@ export default {
 	},
 	methods: {
 		onAddOrderClicked: function() {
-			this.$router.push(`/order/pizza/${this.pizza.id}`)
+			this.$router.push(`/cart/pizza/${this.pizza.id}`)
 		}
 	}
 }

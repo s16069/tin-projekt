@@ -11,88 +11,97 @@
 			<span>Rozmiar</span>
 			<span>Ilość</span>
 			<span>Cena</span>
-			<span>Edytuj</span>
-			<span>Usuń</span>
 			
-			<template v-for="(position, index) in orderPositions">
+			<template v-for="(position, index) in order.positions">
 			<span :key="'name'+index">{{position.pizzaType.name}}</span>
 			<span :key="'dough'+index">{{position.dough}}</span>
 			<span :key="'size'+index">{{position.size}}</span>
 			<span :key="'amount'+index">{{position.amount}}</span>
-			<span :key="'price'+index">getPrice(position)</span>
-			<img src="../assets/edit.png" width="24px" hegth="24px" @click="onEditPositionClicked(position)" :key="'edit'+index">
-			<img src="../assets/delete.png" width="24px" hegth="24px" @click="onDeletePositionClicked(position)" :key="'delete'+index">
+			<span :key="'price'+index">{{position.price}}</span>
 			</template>
 		</section>
-		
-		<section class="center-button">
-			<router-link to="/" tag="button">Dodaj inną pizzę do zamówienia</router-link>
-		</section>
+
+		<span>Cena: {{order.price}}</span>
 		
 		<section id="order-address-container">
 			<section id="order-address">
 				<h4 class="both-columns">Dostawa:</h4>
 				
-				<validation-provider name="Miejscowość" v-slot="{ errors }" class="row">
-          <label for="city" class="required">Miejscowość:</label>
-          <select id="city" v-model="address.city" v-bind:class="{ invalid: errors.length > 0 }" required>
-            <option selected disabled>Wybierz miejscowość</option>
-            <option>Warszawa</option>
-            <option>Łomianki</option>
-          </select>
-        </validation-provider>
+				<span class="row">
+          <label for="city" class="">Miejscowość:</label>
+          <input 
+						type="text"
+						v-model="order.address.city"
+						disabled>
+        </span>
         
-        <validation-provider name="Ulica" v-slot="{ errors }" class="row">
-          <label for="street" class="required">Ulica:</label>
+        <span class="row">
+          <label for="street" class="">Ulica:</label>
           <input
             type="text"
             id="street"
-            v-model="address.street"
-            v-bind:class="{ invalid: errors.length > 0 }"
-            placeholder="Wpisz ulicę"
-						required
-            maxlength="50">
-          <span class="error">{{ errors[0] }}</span>
-        </validation-provider>
+            v-model="order.address.street"
+						disabled>
+        </span>
         
-        <validation-provider name="Nr domu" v-slot="{ errors }" class="row">
-          <label for="homeNr" class="required">Nr domu:</label>
+        <span class="row">
+          <label for="homeNr" class="">Nr domu:</label>
           <input
             type="text"
             id="homeNr"
-            v-model="address.homeNr"
-            v-bind:class="{ invalid: errors.length > 0 }"
-            placeholder="Wpisz nr domu"
-						required
-            maxlength="10">
-          <span class="error">{{ errors[0] }}</span>
-        </validation-provider>
+            v-model="order.address.homeNr"
+						disabled>
+        </span>
         
-        <validation-provider name="Nr mieszkania" v-slot="{ errors }" class="row">
+        <span class="row">
           <label for="flatNr">Nr mieszkania:</label>
           <input
             type="text"
             id="flatNr"
-            v-model="address.flatNr"
-            v-bind:class="{ invalid: errors.length > 0 }"
-            placeholder="Wpisz nr mieszkania"
-            maxlength="10">
-          <span class="error">{{ errors[0] }}</span>
-        </validation-provider>
+            v-model="order.address.flatNr"
+						disabled>
+       </span>
+
+			<h4 class="both-columns">Historia:</h4>
+
+				<span class="row">
+          <label for="timeCreated">Data utworzenia:</label>
+          <input
+            type="text"
+            id="timeCreated"
+            v-bind:value="getDate(order.timeCreated)"
+						disabled>
+        </span>
+				<span class="row">
+          <label for="timeAccepted">Data zaakceptowania:</label>
+          <input
+            type="text"
+            id="timeAccepted"
+            v-bind:value="getDate(order.timeAccepted)"
+						disabled>
+        </span>
+				<span class="row">
+          <label for="timePrepared">Data przygotowania:</label>
+          <input
+            type="text"
+            id="timePrepared"
+            v-bind:value="getDate(order.timePrepared)"
+						disabled>
+        </span>
+				<span class="row">
+          <label for="timeDelivered">Data dostarczenia:</label>
+          <input
+            type="text"
+            id="timeDelivered"
+            v-bind:value="getDate(order.timeDelivered)"
+						disabled>
+        </span>
 			</section>
 		</section>
 		<section id="order-comments">
 			<label for="comments">Uwagi:</label>
-			<textarea id="comments" rows=2 v-model="comments"></textarea>
+			<textarea id="comments" rows=2 v-model="order.comments" disabled></textarea>
 		</section>
-		
-		<section class="center-button">
-			<button id="send-order">Złóż zamówienie</button>
-		</section>
-		
-		<ul class="errors" v-if="submitted">
-      <li v-for="error in Object.values(errors).flat(1)" :key="error">{{error}}</li>
-    </ul>
 	</form>
 </ValidationObserver>
 </section>
@@ -107,9 +116,10 @@ export default {
 	name: 'PageOrder',
 	data: function() {
 		return {
-			address: {},
-			comments: '',
-			submitted: false,
+			order: {
+				address: {},
+				positions: [],
+			}
 		}
 	},
 	props: {
@@ -128,24 +138,17 @@ export default {
 			}, 0)
 		},
 	},
+	async mounted() {
+		const orderId = this.$route.params.orderId;
+		this.order = await Api.getOrder(orderId);
+	},
 	methods: {
-		onEditPositionClicked: function(pizza) {
-			//todo
+		getDate(timestamp){
+			if(!timestamp)
+				return '';
+			const iso = new Date(timestamp).toISOString();
+			return iso.substring(0, 10) + ' ' + iso.substring(12, 16);
 		},
-		onDeletePositionClicked: function(pizza) {
-			this.$store.commit('order/removePizzaOrder', pizza)
-
-			if (this.orderPositions.length == 0)
-				this.$router.push('/')
-		},
-		sendOrder: function() {
-			const self = this
-			Api.addOrder(this.orderPositions, this.address).then(function() {
-				self.$store.commit('order/resetOrder')
-				self.$router.push('/')
-
-			})
-		}
 	},
 	components: {
 	}
@@ -157,7 +160,7 @@ export default {
 	margin: 10px;
 	padding: 10px;
 	display: grid;
-	grid-template-columns: 20% repeat(6, 1fr);
+	grid-template-columns: 20% repeat(4, 1fr);
 	grid-gap: 10px;
 	background-color: #e8e8e8;
 }

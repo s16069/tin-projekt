@@ -80,13 +80,26 @@ public class MenuService {
 		}
 
 		PizzaType existing = optional.get();
-
+		existing.setName(update.getName());
 		existing.setBasePrice(update.getBasePrice());
 		existing.setDescription(update.getDescription());
 		existing.setImage(update.getImage());
 		existing.setIsSpicy(update.getIsSpicy());
 		existing.setIsVegan(update.getIsVegan());
 		existing.setIsVegetarian(update.getIsVegetarian());
+
+		for(PizzaPrice pizzaPrice : existing.getPizzaPrices()) {
+			pizzaPriceDao.delete(pizzaPrice);
+		}
+
+		existing.getPizzaPrices().clear();
+
+
+		for(PizzaPrice pizzaPrice : update.getPizzaPrices()) {
+			pizzaPrice.setId(null);
+			pizzaPrice.setPizzaType(existing);
+			pizzaPriceDao.saveAndFlush(pizzaPrice);
+		}
 
 		return Optional.of(pizzaTypeDao.saveAndFlush(existing));
     }

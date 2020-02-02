@@ -63,12 +63,12 @@ export const UserModule: Module<UserState, RootState> = {
     isAdmin(state, getters): boolean {
       const role = getters.getRole;
       
-      if (!role) {
-        console.error('no claims');
-        return false;
-      }
-      
       return role === 'ROLE_ADMIN';
+    },
+    isEmployee(state, getters): boolean {
+      const role = getters.getRole;
+      
+      return role === 'ROLE_EMPLOYEE';
     },
   },
   mutations: {

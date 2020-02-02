@@ -105,6 +105,12 @@ export default {
       this.edit = true;
       this.orderPosition.pizzaType = await Api.getPizza(pizzaId);
     }
+    const index = this.$route.params.index;
+    if(index) {
+      this.edit = true;
+      
+    }
+    
   },
   props: {},
   computed: {
@@ -133,7 +139,7 @@ export default {
     saveData() {
       this.$store.commit('order/addPizzaOrder', this.orderPosition)
 
-			this.$router.push('/order')
+			this.$router.push('/cart')
     }
   },
   components: {}
